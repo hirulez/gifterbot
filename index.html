@@ -19646,16 +19646,28 @@
           div.style.top = `${y}px`;
           div.style.backgroundColor = bgColor;
 
+          if (x == 46*size || x == 94*size) {
+            div.style.borderLeft = "1px solid red";
+          }
+
+          if (y == 46*size || y == 94*size) {
+            div.style.borderTop = "1px solid red";
+          }
+
           div.onclick = function () {
             const v = Math.abs(previousCoords[1] - coords[1]);
             const h = Math.abs(previousCoords[0] - coords[0]);
-            const startX = parseInt(document.getElementById("start_x").value);
-            const startY = parseInt(document.getElementById("start_y").value);
+            //const startX = parseInt(document.getElementById("start_x").value);
+            //const startY = parseInt(document.getElementById("start_y").value);
+            const startX = 193;
+            const startY = 666;
+            const link = `https://t.me/notpixel/app?startapp=coords${
+              startX + coords[0]
+            }-${startY + coords[1]}`;
+
             document.getElementById(
               "text"
-            ).innerText = `https://t.me/notpixel/app?startapp=coords${
-              startX + coords[0]
-            }-${startY + coords[1]}\nDistance to previous point:\nVertical - ${
+            ).innerHTML = `<br/><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a><br/><br/>Distance to previous point:\nVertical - ${
               v > 0 ? v + 1 : 0
             }\nHorizontal - ${h > 0 ? h + 1 : 0}`;
             previousCoords = coords;
@@ -19670,8 +19682,8 @@
     </script>
   </head>
   <body>
-    StartX: <input placeholder="start x" id="start_x" value="193" /><br />
-    StartY: <input placeholder="start y" id="start_y" value="666" /><br />
+    <!-- StartX: <input placeholder="start x" id="start_x" value="193" /><br />
+    StartY: <input placeholder="start y" id="start_y" value="666" /><br /> -->
     <div id="text"></div>
     <br />
     <div
