@@ -1,0 +1,35 @@
+.square:hover {
+    background: red !important;
+}
+
+.square{
+    position: absolute;
+}
+
+#canvas {
+    width: 1120px;
+    height: 1120px;
+    position: relative;
+    border: 1px solid gray;
+    margin-top: 60px;
+    display: inline-block;
+}
+
+#text{
+    height: 80px;
+}
+
+#wrapper {
+    width: 1320px;
+    text-align: center;
+}
+
+.popup{
+    position: fixed;
+    background-color: #fff;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
