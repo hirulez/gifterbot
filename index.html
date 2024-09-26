@@ -18,7 +18,7 @@
         let previousCoords = [0, 0];
 
         const app = new PIXI.Application({
-          background: 0xcccccc,
+          background: 0x000,
           width: window.innerWidth,
           height: window.innerHeight,
         });
@@ -73,6 +73,37 @@
 
           showPopup(x, y);
         });
+
+        viewport.on("zoomed-end", function(e) {
+            if (e.scaled > 3 && !viewport.gridEnabled) {
+                viewport.gridEnabled = true;
+                toggleGrid(true);
+            } else if (e.scaled < 3 && viewport.gridEnabled){
+                viewport.gridEnabled = false;
+                toggleGrid(false);
+            }
+        })
+
+        function toggleGrid(enabled) {
+            Object.values(pixels).forEach((pixel) => {
+                const tint = pixel.tint;
+                const originalTint = pixel.originalTint;
+
+                const x = pixel.xCoord;
+                const y = pixel.yCoord;
+
+                pixel.clear();
+
+                pixel.beginFill(0xffffff);
+                if (enabled) {
+                    pixel.lineStyle(0.1, 0xff0000, 0.2);
+                }
+                pixel.tint = tint;
+                pixel.originalTint = originalTint;
+                pixel.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                pixel.endFill();
+            });
+        }
 
         function showPopup(x, y) {
           let popup = document.getElementById("popup");
