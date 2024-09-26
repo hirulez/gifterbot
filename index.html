@@ -13,12 +13,13 @@
       document.addEventListener("DOMContentLoaded", function () {
         const startX = 200;
         const startY = 577;
-        const pixelSize = 5;
+        const pixelSize = 20;
         const imageSize = 140 * pixelSize;
         let previousCoords = [0, 0];
+        let zoomThreshold = 0.7;
 
         const app = new PIXI.Application({
-          background: 0x000,
+          background: 0xdddddd,
           width: window.innerWidth,
           height: window.innerHeight,
         });
@@ -75,10 +76,10 @@
         });
 
         viewport.on("zoomed-end", function(e) {
-            if (e.scaled > 3 && !viewport.gridEnabled) {
+            if (e.scaled > zoomThreshold && !viewport.gridEnabled) {
                 viewport.gridEnabled = true;
                 toggleGrid(true);
-            } else if (e.scaled < 3 && viewport.gridEnabled){
+            } else if (e.scaled < zoomThreshold && viewport.gridEnabled){
                 viewport.gridEnabled = false;
                 toggleGrid(false);
             }
@@ -95,12 +96,14 @@
                 pixel.clear();
 
                 pixel.beginFill(0xffffff);
-                if (enabled) {
-                    pixel.lineStyle(0.1, 0xff0000, 0.2);
-                }
                 pixel.tint = tint;
                 pixel.originalTint = originalTint;
-                pixel.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                if (enabled) {
+                    pixel.drawRect((x * pixelSize)+1, (y * pixelSize)+1, pixelSize-2, pixelSize-2);
+                } else {
+                    pixel.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                }
+                
                 pixel.endFill();
             });
         }
