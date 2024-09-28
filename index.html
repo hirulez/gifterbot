@@ -120,7 +120,7 @@
                 const h = Math.abs(previousCoords[0] - shiftedX);
                 const v = Math.abs(previousCoords[1] - shiftedY);
 
-                const link = `https://t.me/notpixel/app?startapp=coords${shiftedX}-${shiftedY}`;
+                const link = `https://t.me/notpixel/app?startapp=x${shiftedX}_y${shiftedY}`;
 
                 popup.innerHTML = `
             <a href="${link}" target="_blank" rel="noopener noreferrer" class="open-btn">Open app</a><br/>
