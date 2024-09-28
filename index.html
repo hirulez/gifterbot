@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NotPX: Drawing</title>
@@ -10,131 +11,130 @@
     <script src="viewport.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const startX = 200;
-        const startY = 577;
-        const pixelSize = 20;
-        const imageSize = 140 * pixelSize;
-        let previousCoords = [0, 0];
-        let zoomThreshold = 0.7;
+        document.addEventListener("DOMContentLoaded", function () {
+            const startX = 200;
+            const startY = 577;
+            const pixelSize = 1;
+            const imageSize = 140 * pixelSize;
+            let previousCoords = [0, 0];
+            let zoomThreshold = 0.7;
 
-        const app = new PIXI.Application({
-          background: 0xdddddd,
-          width: window.innerWidth,
-          height: window.innerHeight,
-        });
-        document.body.appendChild(app.view);
-
-        const viewport = new pixi_viewport.Viewport({
-          screenWidth: window.innerWidth,
-          screenHeight: window.innerHeight,
-          worldWidth: imageSize,
-          worldHeight: imageSize,
-          events: app.renderer.events.interaction,
-        });
-
-        // add the viewport to the stage
-        app.stage.addChild(viewport);
-
-        // activate plugins
-        viewport.drag().pinch().wheel();
-        let pixels = {};
-
-        for (let x = 0; x < imageSize / pixelSize; x++) {
-          for (y = 0; y < imageSize / pixelSize; y++) {
-            const pixel = viewport.addChild(new PIXI.Graphics());
-
-            pixel.beginFill(0xffffff);
-            pixel.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-            pixel.endFill();
-            pixel.originalTint = jsonData[`${x}_${y}`];
-            pixel.tint = jsonData[`${x}_${y}`];
-
-            pixel.xCoord = x;
-            pixel.yCoord = y;
-            pixels[`${x}_${y}`] = pixel;
-          }
-        }
-
-        viewport.fit();
-        viewport.on("clicked", function (e) {
-          Object.values(pixels).forEach((p) => {
-            if (p.isActive) {
-              p.tint = p.originalTint;
-              p.isActive = false;
-            }
-          });
-
-          const x = Math.floor(e.world.x / pixelSize);
-          const y = Math.floor(e.world.y / pixelSize);
-          const pixel = pixels[`${x}_${y}`];
-
-          pixel.isActive = true;
-          pixel.tint = 0xff0000;
-
-          showPopup(x, y);
-        });
-
-        viewport.on("zoomed-end", function(e) {
-            if (e.scaled > zoomThreshold && !viewport.gridEnabled) {
-                viewport.gridEnabled = true;
-                toggleGrid(true);
-            } else if (e.scaled < zoomThreshold && viewport.gridEnabled){
-                viewport.gridEnabled = false;
-                toggleGrid(false);
-            }
-        })
-
-        function toggleGrid(enabled) {
-            Object.values(pixels).forEach((pixel) => {
-                const tint = pixel.tint;
-                const originalTint = pixel.originalTint;
-
-                const x = pixel.xCoord;
-                const y = pixel.yCoord;
-
-                pixel.clear();
-
-                pixel.beginFill(0xffffff);
-                pixel.tint = tint;
-                pixel.originalTint = originalTint;
-                if (enabled) {
-                    pixel.drawRect((x * pixelSize)+1, (y * pixelSize)+1, pixelSize-2, pixelSize-2);
-                } else {
-                    pixel.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-                }
-                
-                pixel.endFill();
+            const app = new PIXI.Application({
+                background: 0xdddddd,
+                width: window.innerWidth,
+                height: window.innerHeight,
             });
-        }
+            document.body.appendChild(app.view);
 
-        function showPopup(x, y) {
-          let popup = document.getElementById("popup");
-          if (!popup) {
-            popup = document.createElement("div");
-            popup.id = "popup";
-            document.body.appendChild(popup);
-          }
+            const viewport = new pixi_viewport.Viewport({
+                screenWidth: window.innerWidth,
+                screenHeight: window.innerHeight,
+                worldWidth: imageSize,
+                worldHeight: imageSize,
+                events: app.renderer.events.interaction,
+            });
 
-          const shiftedX = startX + x;
-          const shiftedY = startY + y;
+            // add the viewport to the stage
+            app.stage.addChild(viewport);
 
-          const h = Math.abs(previousCoords[0] - shiftedX);
-          const v = Math.abs(previousCoords[1] - shiftedY);
+            // activate plugins
+            viewport.drag().pinch().wheel();
+            let pixels = {};
+            const basePixel = new PIXI.Sprite(PIXI.Texture.WHITE); // A white texture that can be tinted
+            basePixel.width = pixelSize;
+            basePixel.height = pixelSize;
 
-          const link = `https://t.me/notpixel/app?startapp=coords${shiftedX}-${shiftedY}`;
+            for (let x = 0; x < imageSize / pixelSize; x++) {
+                for (y = 0; y < imageSize / pixelSize; y++) {
+                    const pixel = viewport.addChild(new PIXI.Sprite(basePixel.texture));
 
-          popup.innerHTML = `
+                    pixel.width = pixelSize;
+                    pixel.height = pixelSize;
+
+                    // Set position of the pixel
+                    pixel.x = x * pixelSize;
+                    pixel.y = y * pixelSize;
+
+                    // Apply tint color from jsonData
+                    const color = jsonData[`${x}_${y}`];  // Assuming jsonData has color codes
+                    pixel.tint = color;
+                    pixel.originalTint = color;
+
+                    pixels[`${x}_${y}`] = pixel;
+                }
+            }
+
+            viewport.fit();
+            viewport.on("clicked", function (e) {
+                Object.values(pixels).forEach((p) => {
+                    if (p.isActive) {
+                        p.tint = p.originalTint;
+                        p.isActive = false;
+                    }
+                });
+
+                const x = Math.floor(e.world.x / pixelSize);
+                const y = Math.floor(e.world.y / pixelSize);
+                const pixel = pixels[`${x}_${y}`];
+
+                pixel.isActive = true;
+                pixel.tint = 0xff0000;
+
+                showPopup(x, y);
+            });
+
+            // function toggleGrid(enabled) {
+            //     Object.values(pixels).forEach((pixel) => {
+            //         const tint = pixel.tint;
+            //         const originalTint = pixel.originalTint;
+
+            //         const x = pixel.xCoord;
+            //         const y = pixel.yCoord;
+
+            //         pixel.clear();
+
+            //         pixel.beginFill(0xffffff);
+            //         pixel.tint = tint;
+            //         pixel.originalTint = originalTint;
+            //         if (enabled) {
+            //             pixel.drawRect((x * pixelSize)+1, (y * pixelSize)+1, pixelSize-2, pixelSize-2);
+            //         } else {
+            //             pixel.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+            //         }
+
+            //         pixel.endFill();
+            //     });
+            // }
+
+            function showPopup(x, y) {
+                let popup = document.getElementById("popup");
+                if (!popup) {
+                    popup = document.createElement("div");
+                    popup.id = "popup";
+                    document.body.appendChild(popup);
+                }
+
+                const shiftedX = startX + x;
+                const shiftedY = startY + y;
+
+                const h = Math.abs(previousCoords[0] - shiftedX);
+                const v = Math.abs(previousCoords[1] - shiftedY);
+
+                const link = `https://t.me/notpixel/app?startapp=coords${shiftedX}-${shiftedY}`;
+
+                popup.innerHTML = `
             <a href="${link}" target="_blank" rel="noopener noreferrer" class="open-btn">Open app</a><br/>
             Coords: ${shiftedX}-${shiftedY}<br/>
             Distance:<br/>
             Vertical - ${v > 0 ? v + 1 : 0}<br/>
             Horizontal - ${h > 0 ? h + 1 : 0}
           `;
-          previousCoords = [shiftedX, shiftedY];
-        }
-      });
+                previousCoords = [shiftedX, shiftedY];
+            }
+        });
     </script>
-  </head>
-  <body></body>
+</head>
+
+<body></body>
+
 </html>
