@@ -6,16 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NotPX: Drawing</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="coords.js"></script>
+    <script src="coordsByColors.js"></script>
     <script src="pixi.js"></script>
     <script src="viewport.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const pixelSize = 1;
             const startX = 0;
             const startY = 500;
-            const pixelSize = 1;
             const imageSize = 40 * pixelSize;
+            const verticalImages = 1;
+            const horizontalImages = 2;
             let previousCoords = [0, 0];
             let zoomThreshold = 0.7;
 
@@ -29,8 +31,8 @@
             const viewport = new pixi_viewport.Viewport({
                 screenWidth: window.innerWidth,
                 screenHeight: window.innerHeight,
-                worldWidth: imageSize,
-                worldHeight: imageSize,
+                worldWidth: imageSize * horizontalImages,
+                worldHeight: imageSize * verticalImages,
                 events: app.renderer.events.interaction,
             });
 
@@ -44,24 +46,43 @@
             basePixel.width = pixelSize;
             basePixel.height = pixelSize;
 
-            for (let x = 0; x < imageSize / pixelSize; x++) {
-                for (y = 0; y < imageSize / pixelSize; y++) {
-                    const pixel = viewport.addChild(new PIXI.Sprite(basePixel.texture));
+            let eggs = [
+                { startX: 0, startY: 0, background: "#000000", border: "#FFFFFF", main: "#FFB471", shadow: "#9E6924" },
+                { startX: 40, startY: 0, background: "#FF3981", border: "#FFFFFF", main: "#FFB471", shadow: "#9E6924" }
+            ];
 
-                    pixel.width = pixelSize;
-                    pixel.height = pixelSize;
-
-                    // Set position of the pixel
-                    pixel.x = x * pixelSize;
-                    pixel.y = y * pixelSize;
-
-                    // Apply tint color from jsonData
-                    const color = jsonData[`${x}_${y}`];  // Assuming jsonData has color codes
-                    pixel.tint = color;
-                    pixel.originalTint = color;
-
-                    pixels[`${x}_${y}`] = pixel;
+            for (let index = 0; index < eggs.length; index++) {
+                const egg = eggs[index];
+                for (let i = 0; i < backgroundCoords.length; i++) {
+                    drawPixel(egg.startX + backgroundCoords[i][0], egg.startY + backgroundCoords[i][1], egg, egg.background);
                 }
+                for (let i = 0; i < mainCoords.length; i++) {
+                    drawPixel(egg.startX + mainCoords[i][0], egg.startY + mainCoords[i][1], egg, egg.main);
+                }
+                for (let i = 0; i < borderCoords.length; i++) {
+                    drawPixel(egg.startX + borderCoords[i][0], egg.startY + borderCoords[i][1], egg, egg.border);
+                }
+                for (let i = 0; i < shadowCoords.length; i++) {
+                    drawPixel(egg.startX + shadowCoords[i][0], egg.startY + shadowCoords[i][1], egg, egg.shadow);
+                }
+            }
+
+            function drawPixel(x, y, egg, color) {
+                console.log(egg)
+                const pixel = viewport.addChild(new PIXI.Sprite(basePixel.texture));
+
+                pixel.width = pixelSize;
+                pixel.height = pixelSize;
+
+                // Set position of the pixel
+                pixel.x = x * pixelSize;
+                pixel.y = y * pixelSize;
+
+                // Apply tint color from jsonData
+                pixel.tint = color;
+                pixel.originalTint = color;
+                pixel.egg = egg;
+                pixels[`${x}_${y}`] = pixel;
             }
 
             viewport.fit();
@@ -78,35 +99,12 @@
                 const pixel = pixels[`${x}_${y}`];
 
                 pixel.isActive = true;
-                pixel.tint = 0xff0000;
+                pixel.tint = 0x39FFEC;
 
-                showPopup(x, y);
+                showPopup(x, y, pixel.egg);
             });
 
-            // function toggleGrid(enabled) {
-            //     Object.values(pixels).forEach((pixel) => {
-            //         const tint = pixel.tint;
-            //         const originalTint = pixel.originalTint;
-
-            //         const x = pixel.xCoord;
-            //         const y = pixel.yCoord;
-
-            //         pixel.clear();
-
-            //         pixel.beginFill(0xffffff);
-            //         pixel.tint = tint;
-            //         pixel.originalTint = originalTint;
-            //         if (enabled) {
-            //             pixel.drawRect((x * pixelSize)+1, (y * pixelSize)+1, pixelSize-2, pixelSize-2);
-            //         } else {
-            //             pixel.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-            //         }
-
-            //         pixel.endFill();
-            //     });
-            // }
-
-            function showPopup(x, y) {
+            function showPopup(x, y, egg) {
                 let popup = document.getElementById("popup");
                 if (!popup) {
                     popup = document.createElement("div");
@@ -114,7 +112,7 @@
                     document.body.appendChild(popup);
                 }
 
-                const shiftedX = startX + x;
+                const shiftedX = startX  + x;
                 const shiftedY = startY + y;
 
                 const h = Math.abs(previousCoords[0] - shiftedX);
@@ -136,7 +134,9 @@
 </head>
 
 <body>
-    <div style="padding: 10px; position: fixed; background: white;"><a href="https://notpixel-helpers.s3.eu-central-1.amazonaws.com/template.pdf" target="_blank">Инструкция по установке шаблона</a></div>
+    <div style="padding: 10px; position: fixed; background: white;"><a
+            href="https://notpixel-helpers.s3.eu-central-1.amazonaws.com/template.pdf" target="_blank">Инструкция по
+            установке шаблона</a></div>
 </body>
 
 </html>
