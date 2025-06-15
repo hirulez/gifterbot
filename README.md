@@ -16,7 +16,7 @@
 
 ## ⚙️ Установка и запуск
 
-1. **Скачайте нужную версию:**
+1. **Скачайте нужную версию здесь [https://github.com/hirulez/gifterbot/releases/tag/release](https://github.com/hirulez/gifterbot/releases/tag/release):**
    - `app_wnd.exe` — Windows
    - `app_silicon_mac` — macOS на Apple Silicon
    - `app_intel_mac` — macOS на Intel
