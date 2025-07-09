@@ -23,7 +23,7 @@
 ## 🛠 Установка и запуск
 
 1. **Скачайте нужную версию:**  
-   👉 [Скачать релиз](https://github.com/hirulez/gifterbot/releases/tag/release)
+   👉 [Скачать релиз](https://github.com/hirulez/gifterbot/releases)
 
    - `gifter.windows.zip` — Windows  
    - `gifter.macApple.zip` — macOS (Apple Silicon)  
@@ -73,7 +73,7 @@ macOS может закрывать приложение или блокиров
 
 ## 🔄 Обновление
 
-1. Скачайте последнюю версию с [GitHub](https://github.com/hirulez/gifterbot/releases/tag/release) 
+1. Скачайте последнюю версию с [GitHub](https://github.com/hirulez/gifterbot/releases)
 2. Замените старую версию новым файлом — настройки сохранятся.
 
 ---
